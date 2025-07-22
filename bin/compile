@@ -9,15 +9,21 @@ function prints() {
   echo "-----> $*"
 }
 
+# Debug: Print the current stack
+prints "Detected Heroku stack: $STACK"
+
 #Download stack specific binary of wkhtmltopdf.
 if [ "$STACK" = "heroku-18" ];then
 	WKHTMLTOPDF_URL="https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.bionic_amd64.deb"
 elif [ "$STACK" = "heroku-20" ];then
 	WKHTMLTOPDF_URL="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.focal_amd64.deb"
-# elif [ "$STACK" = "heroku-24" ];then
-# 	WKHTMLTOPDF_URL="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-3/wkhtmltox_0.12.6.1-3.noble_amd64.deb"
+elif [ "$STACK" = "heroku-24" ];then
+	WKHTMLTOPDF_URL="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-3/wkhtmltox_0.12.6.1-3.noble_amd64.deb"
 fi
 #Done
+
+# Debug: Print which URL will be used
+prints "Using wkhtmltopdf URL: $WKHTMLTOPDF_URL"
 
 #Checking and updating the $WKHTMLTOPDF_URL from Aptfile
 if [ -f "$BUILD_DIR/Aptfile" ]; then
@@ -52,9 +58,13 @@ if [ ! -f "$DESTINATION/wkhtmltoimage" ]; then
         if [[ $(basename $WKHTMLTOPDF_URL) == *deb ]]; then
             dpkg -x "$PACKAGE_NAME" "$WKHTMLTOPDF_PATH_EXTRACT"
             cp $WKHTMLTOPDF_PATH_EXTRACT/usr/local/bin/* $DESTINATION
+            chmod +x $DESTINATION/wkhtmltopdf
+            chmod +x $DESTINATION/wkhtmltoimage
         else
             tar --xz --extract --file "$PACKAGE_NAME" --directory "$CACHE_DIR"
             cp $WKHTMLTOPDF_PATH_EXTRACT/bin/* $DESTINATION
+            chmod +x $DESTINATION/wkhtmltopdf
+            chmod +x $DESTINATION/wkhtmltoimage
         fi
 
         prints 'Deleting temporary data'
@@ -62,5 +72,19 @@ if [ ! -f "$DESTINATION/wkhtmltoimage" ]; then
         rm -rf "$WKHTMLTOPDF_PATH_EXTRACT"
 
         prints 'wkhtmltopdf is successfully downloaded and extracted to /app/bin'
+        
+        # Verify installation
+        if [ -f "$DESTINATION/wkhtmltopdf" ]; then
+            prints "wkhtmltopdf binary found at $DESTINATION/wkhtmltopdf"
+            ls -la $DESTINATION/wkhtmltopdf
+        else
+            prints "ERROR: wkhtmltopdf binary not found at $DESTINATION/wkhtmltopdf"
+        fi
+        
+        if [ -f "$DESTINATION/wkhtmltoimage" ]; then
+            prints "wkhtmltoimage binary found at $DESTINATION/wkhtmltoimage"
+        else
+            prints "ERROR: wkhtmltoimage binary not found at $DESTINATION/wkhtmltoimage"
+        fi
     fi
 fi
