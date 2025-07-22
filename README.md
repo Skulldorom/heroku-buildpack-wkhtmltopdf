@@ -57,14 +57,14 @@ This buildpack downloads and extracts the
 Just add the buildpack to your heroku app by executing:
 
 ```bash
-heroku buildpacks:add https://github.com/RohanDebroy/heroku-buildpack-wkhtmltopdf.git
+heroku buildpacks:add https://github.com/Skulldorom/heroku-buildpack-wkhtmltopdf.git
 ```
 
 You can also force this buildpack to be the first Heroku process by using the
 `--index` option:
 
 ```bash
-heroku buildpacks:add --index=1 https://github.com/RohanDebroy/heroku-buildpack-wkhtmltopdf.git
+heroku buildpacks:add --index=1 https://github.com/Skulldorom/heroku-buildpack-wkhtmltopdf.git
 ```
 
 ### Aptfile(Optional) <a name="aptfile"></a>
