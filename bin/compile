@@ -13,13 +13,12 @@ function prints() {
 prints "Detected Heroku stack: $STACK"
 
 #Download stack specific binary of wkhtmltopdf.
+STACK_VERSION=$(echo "$STACK" | grep -oE '[0-9]+$')
 if [ "$STACK" = "heroku-18" ];then
 	WKHTMLTOPDF_URL="https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.bionic_amd64.deb"
 elif [ "$STACK" = "heroku-20" ];then
 	WKHTMLTOPDF_URL="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.focal_amd64.deb"
-elif [ "$STACK" = "heroku-22" ];then
-	WKHTMLTOPDF_URL="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-2/wkhtmltox_0.12.6.1-2.jammy_amd64.deb"
-elif [ "$STACK" = "heroku-24" ];then
+elif [ -n "$STACK_VERSION" ] && [ "$STACK_VERSION" -ge 22 ];then
 	WKHTMLTOPDF_URL="https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-2/wkhtmltox_0.12.6.1-2.jammy_amd64.deb"
 fi
 #Done
